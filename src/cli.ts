@@ -8,6 +8,7 @@ import {
   apiIsLive,
   shortIdentifierIsValid,
   longUrlIsValid,
+  retrieveShortenedUrlInfo,
 } from './index';
 
 const log = console.log;
@@ -24,7 +25,7 @@ async function main() {
   // Parse arguments
   program.parse(process.argv);
   const options = program.opts();
-  let { help, status, longUrl, shortIdentifier } = options;
+  let { help, status, retrieve, longUrl, shortIdentifier } = options;
 
   // Help option: show arguments
   if (help) {
@@ -39,6 +40,15 @@ async function main() {
       outputMessage('API is down :(', 'error');
     }
     return;
+  }
+
+  // Retrieve option: retrieve long URL, show info and stats
+  if (retrieve) {
+    if (!shortIdentifier) {
+      outputMessage('Please provide a short identifier', 'error');
+    } else {
+      await retrieveShortenedUrlInfo(shortIdentifier);
+    }
   }
 
   // Long url not provided: ask interactively
@@ -67,14 +77,13 @@ main();
 function registerCommanderOptions() {
   program
     .version('0.0.1')
-    .option('-l, --longUrl <longUrl>', 'Long URL to shorten')
-    .option('-s, --shortIdentifier <shortId>', 'Short identifier to use')
-    .option('-h, --help', 'Show help')
-    .option('-v, --version', 'Show version number')
-    .option('-S, --status', 'Show API status')
+    .option('-l, --longUrl <longUrl>', 'Long URL to shorten.')
+    .option('-s, --shortIdentifier <shortId>', 'Short identifier to use.')
+    .option('-h, --help', 'Show help.')
+    .option('-S, --status', 'Show API status.')
     .option(
-      '-r, --retrieve',
-      'Retrieve long URL from short URL as well as some basic information and statistics about it.'
+      '-i, --info <longUrl>',
+      'Retrieve some information and stats about a shortened URL.'
     );
 }
 
