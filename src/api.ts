@@ -1,5 +1,5 @@
 import { RetrieveApiResponse, ShortenApiResponse } from './types';
-import { API_URL } from './utils.js';
+import { API_URL, longUrlIsValid } from './utils.js';
 import fetch from 'node-fetch';
 
 /**
@@ -10,6 +10,8 @@ import fetch from 'node-fetch';
  * @throws Error
  */
 export async function shorten(longURL: string, shortURL?: string) {
+  if (!longUrlIsValid) throw new Error('Please provide a valid URL');
+
   const apiEndPoint = shortURL
     ? `${API_URL}/shorten?short=${shortURL}&long=${longURL}`
     : `${API_URL}/shorten?long=${longURL}`;

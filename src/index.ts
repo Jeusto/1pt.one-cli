@@ -14,17 +14,22 @@ import chalk from 'chalk';
   // Parse arguments
   program.parse(process.argv);
   const options = program.opts();
-  const { help, status, retrieve } = options;
+  const { help, status, info } = options;
   let { longUrl, shortIdentifier } = options;
 
   // Call different views depending on the options
   if (help) program.help();
-  if (status) await checkApiStatus();
-  if (retrieve) await retrieveInfo(shortIdentifier);
-
-  // Long url not provided: ask interactively
-  if (!longUrl) ({ longUrl, shortIdentifier } = await askURL());
-  await shortenURL(longUrl, shortIdentifier);
+  else if (status) checkApiStatus();
+  else if (info) retrieveInfo(info);
+  // Long url and short id provided => shorten
+  else if (longUrl && shortIdentifier) shortenURL(longUrl, shortIdentifier);
+  // Only long url provided => shorten with random short id
+  else if (longUrl && !shortIdentifier) shortenURL(longUrl, shortIdentifier);
+  // Default => ask for long and short url
+  else {
+    ({ longUrl, shortIdentifier } = await askURL());
+    await shortenURL(longUrl, shortIdentifier);
+  }
 })();
 
 /**

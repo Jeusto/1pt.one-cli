@@ -13,8 +13,6 @@ const log = console.log;
  * @param shortURL
  */
 export async function shortenURL(longURL: string, shortURL: string) {
-  if (!shortIdentifierIsValid || !longUrlIsValid) return;
-
   const spinner = ora(`Shortening the URL "${chalk.red(longURL)}"`).start();
 
   try {
@@ -40,7 +38,7 @@ export async function shortenURL(longURL: string, shortURL: string) {
  * @param shortURL
  */
 export async function retrieveInfo(shortURL: string) {
-  if (shortIdentifierIsValid(shortURL)) {
+  if (!shortIdentifierIsValid(shortURL)) {
     outputMessage('Please provide a short URL', 'error');
     return;
   }
@@ -55,12 +53,14 @@ export async function retrieveInfo(shortURL: string) {
 
     log(chalk.bold('Original URL: '), chalk.underline.cyan(info.long_url));
     log(chalk.bold('Shortened URL: '), chalk.underline.cyan(short));
-    log(chalk.bold('Created at: '), chalk.underline.cyan(info.created_at));
-    log(chalk.bold('Number of visits: '), chalk.underline.cyan(info.number_of_visits));
+    log(chalk.bold('Created at: '), chalk.cyan(info.created_at));
+    log(chalk.bold('Number of visits: '), chalk.cyan(info.number_of_visits));
   } catch (error: any) {
     spinner.stop();
     outputMessage(`Error: ${error.message}`, 'error');
   }
+
+  process.exit(0);
 }
 
 /**
@@ -73,6 +73,8 @@ export async function checkApiStatus() {
 
   if (isLive) outputMessage('API is up and running!', 'success');
   else outputMessage('API is down :(', 'error');
+
+  process.exit(0);
 }
 
 /**
@@ -92,11 +94,11 @@ export async function askURL() {
     {
       name: 'shortIdentifier',
       type: 'input',
-      message: 'Enter the short version of the url:',
+      message: 'Enter the short version of the url, hit enter to randomly generate one:',
     },
   ];
 
-  while (!longUrlIsValid(longUrl) && !shortIdentifierIsValid(shortIdentifier)) {
+  while (!longUrlIsValid(longUrl)) {
     outputMessage('Invalid URL or short identifier. Please try again:', 'error');
     const res = await inquirer.prompt(questions);
     longUrl = res.longUrl;
