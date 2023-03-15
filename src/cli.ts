@@ -1,99 +1,88 @@
-#!/usr/bin/env node
-import chalk from 'chalk';
+import { API_URL, longUrlIsValid, shortIdentifierIsValid } from './utils.js';
+import { shorten, retrieve, apiIsLive } from './api.js';
+import chalk, { ChalkInstance } from 'chalk';
 import inquirer from 'inquirer';
-import { program } from 'commander';
-
-import {
-  shortenURL,
-  apiIsLive,
-  shortIdentifierIsValid,
-  longUrlIsValid,
-  retrieveShortenedUrlInfo,
-} from './index';
+import ora from 'ora';
+import QRCode from 'qrcode';
 
 const log = console.log;
 
 /**
- *
- * @returns
+ * CLI view for shortening a URL and displaying the result
+ * @param longURL
+ * @param shortURL
  */
-async function main() {
-  // Initialize and register options
-  log(chalk.bold.bgBlue('1pt.one CLI'));
-  registerCommanderOptions();
+export async function shortenURL(longURL: string, shortURL: string) {
+  if (!shortIdentifierIsValid || !longUrlIsValid) return;
 
-  // Parse arguments
-  program.parse(process.argv);
-  const options = program.opts();
-  let { help, status, retrieve, longUrl, shortIdentifier } = options;
+  const spinner = ora(`Shortening the URL "${chalk.red(longURL)}"`).start();
 
-  // Help option: show arguments
-  if (help) {
-    program.help();
+  try {
+    const short = await shorten(longURL, shortURL);
+
+    QRCode.toString(short, (err, url) => {
+      if (err) throw err;
+      log(chalk.white(url));
+    });
+
+    spinner.stop();
+
+    log(chalk.bold('Original URL: '), chalk.underline.cyan(longURL));
+    log(chalk.bold('Shortened URL: '), chalk.underline.cyan(short));
+  } catch (error: any) {
+    spinner.stop();
+    outputMessage(`Error: ${error.message}`, 'error');
   }
+}
 
-  // Status option: check API status
-  if (status) {
-    if (await apiIsLive()) {
-      outputMessage('API is up and running!', 'success');
-    } else {
-      outputMessage('API is down :(', 'error');
-    }
+/**
+ * CLI view for retrieving information about a shortened URL
+ * @param shortURL
+ */
+export async function retrieveInfo(shortURL: string) {
+  if (shortIdentifierIsValid(shortURL)) {
+    outputMessage('Please provide a short URL', 'error');
     return;
   }
 
-  // Retrieve option: retrieve long URL, show info and stats
-  if (retrieve) {
-    if (!shortIdentifier) {
-      outputMessage('Please provide a short identifier', 'error');
-    } else {
-      await retrieveShortenedUrlInfo(shortIdentifier);
-    }
-  }
+  const spinner = ora(`Retrieving information about "${chalk.red(shortURL)}"`).start();
 
-  // Long url not provided: ask interactively
-  if (!longUrl) {
-    ({ longUrl, shortIdentifier } = await askURL());
-  }
-
-  // Validate long url
-  if (longUrl && !longUrlIsValid(longUrl)) {
-    outputMessage('Invalid long URL', 'error');
-  }
-
-  // Shorten URL
   try {
-    await shortenURL(longUrl, shortIdentifier);
+    const info = await retrieve(shortURL);
+    const short = `${API_URL}/${info.short_url}`;
+
+    spinner.stop();
+
+    log(chalk.bold('Original URL: '), chalk.underline.cyan(info.long_url));
+    log(chalk.bold('Shortened URL: '), chalk.underline.cyan(short));
+    log(chalk.bold('Created at: '), chalk.underline.cyan(info.created_at));
+    log(chalk.bold('Number of visits: '), chalk.underline.cyan(info.number_of_visits));
   } catch (error: any) {
-    outputMessage(error.message, 'error');
+    spinner.stop();
+    outputMessage(`Error: ${error.message}`, 'error');
   }
 }
 
-main();
-
 /**
- *
+ * CLI view for checking the status of the API
  */
-function registerCommanderOptions() {
-  program
-    .version('0.0.1')
-    .option('-l, --longUrl <longUrl>', 'Long URL to shorten.')
-    .option('-s, --shortIdentifier <shortId>', 'Short identifier to use.')
-    .option('-h, --help', 'Show help.')
-    .option('-S, --status', 'Show API status.')
-    .option(
-      '-i, --info <longUrl>',
-      'Retrieve some information and stats about a shortened URL.'
-    );
+export async function checkApiStatus() {
+  const spinner = ora('Checking API status').start();
+  const isLive = await apiIsLive();
+  spinner.stop();
+
+  if (isLive) outputMessage('API is up and running!', 'success');
+  else outputMessage('API is down :(', 'error');
 }
 
 /**
- *
+ * Asks the user for a long URL and a short identifier
  * @returns
  */
-async function askURL() {
-  log(chalk.bold('No arguments provided. Please follow the instructions:'));
+export async function askURL() {
+  outputMessage('No arguments provided. Please follow the instructions:');
 
+  let longUrl, shortIdentifier;
   const questions = [
     {
       name: 'longUrl',
@@ -107,17 +96,30 @@ async function askURL() {
     },
   ];
 
-  const { longUrl, shortIdentifier } = await inquirer.prompt(questions);
+  while (!longUrlIsValid(longUrl) && !shortIdentifierIsValid(shortIdentifier)) {
+    outputMessage('Invalid URL or short identifier. Please try again:', 'error');
+    const res = await inquirer.prompt(questions);
+    longUrl = res.longUrl;
+    shortIdentifier = res.shortIdentifier;
+  }
+
   return { longUrl, shortIdentifier };
 }
 
 /**
- *
+ * Outputs a message to the console
  * @param msg
  * @param type
  */
-function outputMessage(msg: string, type: string | undefined = undefined) {
-  if (type === 'success') log(chalk.green(msg));
-  else if (type === 'error') log(chalk.red(msg));
-  else log(chalk.blue(msg));
+export function outputMessage(msg: string, type: string | undefined = undefined) {
+  const type_color_map: { [key: string]: ChalkInstance } = {
+    success: chalk.green,
+    error: chalk.red,
+  };
+
+  if (type && type_color_map[type]) {
+    log(type_color_map[type](msg));
+  } else {
+    log(chalk.white(msg));
+  }
 }
