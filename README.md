@@ -2,7 +2,7 @@
 
 A CLI tool to use the minimalistic [1pt.one](https://github.com/Jeusto/1pt.one) URL shortener from the terminal.
 
-## Installation
+![Demo image](./demo.png)
 
 ## Usage
 
@@ -19,4 +19,10 @@ Options:
   -i, --info <shortId>             Retrieve some information and stats about a shortened URL.
 ```
 
+## Installation
+
+[] TODO
+
 ## Example
+
+[] TODO

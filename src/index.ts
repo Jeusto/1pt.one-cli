@@ -23,7 +23,7 @@ import chalk from 'chalk';
   if (retrieve) await retrieveInfo(shortIdentifier);
 
   // Long url not provided: ask interactively
-  ({ longUrl, shortIdentifier } = await askURL());
+  if (!longUrl) ({ longUrl, shortIdentifier } = await askURL());
   await shortenURL(longUrl, shortIdentifier);
 })();
 
