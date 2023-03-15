@@ -1,12 +1,13 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@jest/globals': ^29.5.0
   '@types/inquirer': ^9.0.3
   '@types/node': ^18.14.6
   '@types/qrcode': ^1.5.0
   '@typescript-eslint/eslint-plugin': ^5.54.0
   '@typescript-eslint/parser': ^5.40.0
-  chalk: ^5.1.0
+  chalk: ^5.2.0
   commander: ^10.0.0
   eslint: ^8.35.0
   eslint-config-prettier: ^8.5.0
@@ -35,6 +36,7 @@ dependencies:
   qrcode: 1.5.1
 
 devDependencies:
+  '@jest/globals': 29.5.0
   '@types/inquirer': 9.0.3
   '@types/node': 18.15.3
   '@types/qrcode': 1.5.0
