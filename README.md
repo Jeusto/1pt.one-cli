@@ -2,7 +2,7 @@
 
 A CLI tool to use the minimalistic [1pt.one](https://github.com/Jeusto/1pt.one) URL shortener from the terminal.
 
-![Demo image](./demo.png)
+[![asciicast](https://asciinema.org/a/6i8gic8uXmrM7TMqVMFGDpxw2.svg)](https://asciinema.org/a/6i8gic8uXmrM7TMqVMFGDpxw2)
 
 ## Usage
 
