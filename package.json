@@ -1,6 +1,6 @@
 {
   "name": "1.1-cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A CLI app to use the 1pt.one URL shortener",
   "author": "Jeusto",
   "type": "module",
@@ -8,6 +8,9 @@
   "bin": {
     "1.1": "./dist/index.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "start": "npm run build-ts && node dist/index.js",
     "dev": "npm run build-ts && node --inspect-brk dist/index.js",
