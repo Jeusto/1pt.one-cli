@@ -8,7 +8,7 @@ import chalk from 'chalk';
  */
 (async () => {
   // Initialize and register options
-  console.log(chalk.bold.bgBlue('1pt.one CLI'));
+  console.log(chalk.bold.bgBlue('1.1 CLI'));
   registerCommanderOptions();
 
   // Parse arguments
@@ -37,7 +37,7 @@ import chalk from 'chalk';
  */
 function registerCommanderOptions() {
   program
-    .version('0.0.1')
+    .version('0.0.5')
     .option('-l, --longUrl <longUrl>', 'Long URL to shorten.')
     .option('-s, --shortIdentifier <shortId>', 'Short identifier to use.')
     .option('-h, --help', 'Show help.')
