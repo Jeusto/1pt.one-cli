@@ -1,6 +1,6 @@
 {
   "name": "1.1-cli",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A CLI app to use the 1pt.one URL shortener",
   "author": "Jeusto",
   "type": "module",

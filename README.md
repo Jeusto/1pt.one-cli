@@ -4,8 +4,7 @@ A CLI tool to use the minimalistic [1pt.one](https://github.com/Jeusto/1pt.one) 
 
 ## Example
 
-[![asciicast](https://asciinema.org/a/6i8gic8uXmrM7TMqVMFGDpxw2.svg)](https://asciinema.org/a/6i8gic8uXmrM7TMqVMFGDpxw2)
-PS: This is an old example, you can run the CLI with "1.1" instead "1pt.one"
+[![asciicast](https://asciinema.org/a/u1v3rGKVvhuvr3kKSlkQH8xeR.svg)](https://asciinema.org/a/u1v3rGKVvhuvr3kKSlkQH8xeR)
 
 ## Installation
 
